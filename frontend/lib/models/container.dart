@@ -55,7 +55,7 @@ class ContainerType {
 
   @override
   String toString() {
-    return '$name (${size}\' ${type})';
+    return '$name ($size\' $type)';
   }
 }
 
