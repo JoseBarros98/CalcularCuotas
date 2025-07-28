@@ -95,14 +95,3 @@ flutter run
 3. Navega por las secciones usando el menú lateral
 4. Calcula cotizaciones en la sección correspondiente
 
-## Contribución
-
-1. Fork del repositorio
-2. Crear rama: `git checkout -b feature/nueva-caracteristica`
-3. Commit: `git commit -am 'feat: Añadir característica'`
-4. Push: `git push origin feature/nueva-caracteristica`
-5. Crear Pull Request
-
-## Licencia
-
-MIT License
