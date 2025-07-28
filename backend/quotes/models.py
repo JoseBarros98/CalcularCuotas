@@ -1,4 +1,5 @@
 from django.db import models
+from decimal import Decimal
 from django.contrib.auth.models import User
 from ports.models import Port
 from containers.models import ContainerType, CargoType
@@ -22,7 +23,7 @@ class BaseRate(models.Model):
     container_type = models.ForeignKey(ContainerType, on_delete=models.CASCADE)
     base_rate_usd = models.DecimalField(max_digits=10, decimal_places=2)
     fuel_surcharge_percentage = models.DecimalField(max_digits=5, decimal_places=2, default=0)
-    currency_adjustment_factor = models.DecimalField(max_digits=5, decimal_places=4, default=1.0)
+    currency_adjustment_factor = models.DecimalField(max_digits=5, decimal_places=4, default=Decimal('1.0'))
     effective_from = models.DateField()
     effective_to = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
@@ -100,9 +101,15 @@ class QuoteItem(models.Model):
         return f"{self.quote.quote_number} - {self.container_type} x{self.quantity}"
     
     def save(self, *args, **kwargs):
-        # Calculate subtotal
+        from decimal import Decimal
+        # Convertir todos los valores a Decimal por si acaso
+        base_rate = Decimal(str(self.base_rate))
+        fuel_surcharge = Decimal(str(self.fuel_surcharge))
+        handling_fee = Decimal(str(self.handling_fee))
+        documentation_fee = Decimal(str(self.documentation_fee))
+        insurance_fee = Decimal(str(self.insurance_fee))
+        quantity = Decimal(str(self.quantity))
         self.subtotal = (
-            (self.base_rate + self.fuel_surcharge + self.handling_fee + 
-             self.documentation_fee + self.insurance_fee) * self.quantity
+            (base_rate + fuel_surcharge + handling_fee + documentation_fee + insurance_fee) * quantity
         )
         super().save(*args, **kwargs)

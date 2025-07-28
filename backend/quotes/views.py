@@ -8,6 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django.db.models import Q
 from datetime import date, timedelta
+from decimal import Decimal
 
 class ShippingRouteViewSet(viewsets.ModelViewSet):
     queryset = ShippingRoute.objects.all()
@@ -83,17 +84,18 @@ class QuoteViewSet(viewsets.ModelViewSet):
             container_type = ContainerType.objects.get(id=container_type_id)
             cargo_type = CargoType.objects.get(id=cargo_type_id)
 
-            # 4. Calcular el costo total
-            base_cost = base_rate_obj.base_rate_usd
-            fuel_surcharge_amount = base_cost * (base_rate_obj.fuel_surcharge_percentage / 100)
+            # 4. Calcular el costo total usando Decimal
+            base_cost = Decimal(str(base_rate_obj.base_rate_usd))
+            fuel_surcharge_percentage = Decimal(str(base_rate_obj.fuel_surcharge_percentage))
+            fuel_surcharge_amount = base_cost * (fuel_surcharge_percentage / Decimal('100'))
             
-            
-            handling_fee = 50.00 
-            documentation_fee = 25.00 
-            insurance_fee = (base_cost + fuel_surcharge_amount) * 0.01 
+            handling_fee = Decimal('50.00')
+            documentation_fee = Decimal('25.00')
+            insurance_fee = (base_cost + fuel_surcharge_amount) * Decimal('0.01')
+            quantity_decimal = Decimal(str(quantity))
 
-            total_item_cost = (base_cost + fuel_surcharge_amount + handling_fee + insurance_fee) * quantity
-            total_quote_amount = total_item_cost + documentation_fee 
+            total_item_cost = (base_cost + fuel_surcharge_amount + handling_fee + insurance_fee) * quantity_decimal
+            total_quote_amount = total_item_cost + documentation_fee
 
             # Preparar la respuesta
             calculated_quote = {
@@ -106,29 +108,21 @@ class QuoteViewSet(viewsets.ModelViewSet):
                 "volume_cbm": volume_cbm,
                 "estimated_transit_days": route.estimated_transit_days,
                 "breakdown": {
-                    "base_rate_per_container": float(base_rate_obj.base_rate_usd),
-                    "fuel_surcharge_percentage": float(base_rate_obj.fuel_surcharge_percentage),
+                    "base_rate_per_container": float(base_cost),
+                    "fuel_surcharge_percentage": float(fuel_surcharge_percentage),
                     "fuel_surcharge_amount_per_container": float(fuel_surcharge_amount),
-                    "handling_fee_per_container": handling_fee,
-                    "insurance_fee_per_container": insurance_fee,
-                    "documentation_fee_per_quote": documentation_fee,
+                    "handling_fee_per_container": float(handling_fee),
+                    "insurance_fee_per_container": float(insurance_fee),
+                    "documentation_fee_per_quote": float(documentation_fee),
                 },
                 "total_item_cost": float(total_item_cost),
                 "total_quote_amount": float(total_quote_amount),
                 "currency": "USD",
                 "valid_until": (today + timedelta(days=7)).isoformat() 
             }
-            
             return Response(calculated_quote, status=status.HTTP_200_OK)
-
-        except ShippingRoute.DoesNotExist:
-            return Response({"error": "Shipping route not found or inactive."}, status=status.HTTP_404_NOT_FOUND)
-        except ContainerType.DoesNotExist:
-            return Response({"error": "Container type not found."}, status=status.HTTP_404_NOT_FOUND)
-        except CargoType.DoesNotExist:
-            return Response({"error": "Cargo type not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": f"Error al calcular la cotización: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class QuoteItemViewSet(viewsets.ModelViewSet):
     queryset = QuoteItem.objects.all()

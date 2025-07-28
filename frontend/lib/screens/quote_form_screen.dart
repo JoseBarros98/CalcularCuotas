@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -10,6 +9,7 @@ import 'package:frontend/models/quote_calculation.dart';
 import 'package:frontend/services/port_service.dart';
 import 'package:frontend/services/container_service.dart';
 import 'package:frontend/services/quote_service.dart';
+import 'package:frontend/widgets/searchable_dropdown_field.dart'; // Importamos nuestro nuevo widget
 
 class QuoteFormScreen extends StatefulWidget {
   const QuoteFormScreen({super.key});
@@ -32,6 +32,45 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
   QuoteCalculation? _calculatedQuote;
   bool _isLoading = false;
   String? _errorMessage;
+
+  List<Port> _availablePorts = [];
+  List<ContainerType> _availableContainerTypes = [];
+  List<CargoType> _availableCargoTypes = [];
+  bool _isDataLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchInitialData();
+  }
+
+  Future<void> _fetchInitialData() async {
+    setState(() {
+      _isDataLoading = true;
+    });
+    try {
+      final portService = Provider.of<PortService>(context, listen: false);
+      final containerService = Provider.of<ContainerService>(context, listen: false);
+
+      final ports = await portService.getPorts();
+      final containerTypes = await containerService.getContainerTypes();
+      final cargoTypes = await containerService.getCargoTypes();
+
+      setState(() {
+        _availablePorts = ports;
+        _availableContainerTypes = containerTypes;
+        _availableCargoTypes = cargoTypes;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Error al cargar datos iniciales: ${e.toString()}';
+      });
+    } finally {
+      setState(() {
+        _isDataLoading = false;
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -79,8 +118,17 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final portService = Provider.of<PortService>(context);
-    final containerService = Provider.of<ContainerService>(context);
+    if (_isDataLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('ShipQuote Pro - Cotización de Embarque'),
+          centerTitle: true,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -100,62 +148,34 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
               ),
               const SizedBox(height: 16),
               // Puerto de Origen
-              DropdownSearch<Port>(
-                popupProps: const PopupProps.menu(
-                  showSearchBox: true,
-                ),
+              SearchableDropdownField<Port>(
+                labelText: 'Puerto de Origen',
+                hintText: 'Selecciona el puerto de origen',
+                prefixIcon: Icon(FontAwesomeIcons.ship, color: Colors.blueGrey[700]),
+                items: _availablePorts,
+                selectedItem: _selectedOriginPort,
                 itemAsString: (Port p) => '${p.name} (${p.code}, ${p.country.code})',
-                decoratorProps: DropDownDecoratorProps(
-                  decoration: InputDecoration(
-                    labelText: 'Puerto de Origen',
-                    hintText: 'Selecciona el puerto de origen',
-                    prefixIcon: Icon(FontAwesomeIcons.ship, color: Colors.blueGrey[700]),
-                  ),
-                ),
-                items: (String filter, LoadProps? loadProps) async {
-                  final ports = await portService.getPorts();
-                  return ports.where((port) => 
-                    port.name.toLowerCase().contains(filter.toLowerCase()) ||
-                    port.code.toLowerCase().contains(filter.toLowerCase()) ||
-                    port.country.code.toLowerCase().contains(filter.toLowerCase())
-                  ).toList();
-                },
                 onChanged: (Port? port) {
                   setState(() {
                     _selectedOriginPort = port;
                   });
                 },
-                selectedItem: _selectedOriginPort,
                 validator: (value) => value == null ? 'Por favor, selecciona un puerto de origen' : null,
               ),
               const SizedBox(height: 16),
               // Puerto de Destino
-              DropdownSearch<Port>(
-                popupProps: const PopupProps.menu(
-                  showSearchBox: true,
-                ),
+              SearchableDropdownField<Port>(
+                labelText: 'Puerto de Destino',
+                hintText: 'Selecciona el puerto de destino',
+                prefixIcon: Icon(FontAwesomeIcons.locationDot, color: Colors.blueGrey[700]),
+                items: _availablePorts,
+                selectedItem: _selectedDestinationPort,
                 itemAsString: (Port p) => '${p.name} (${p.code}, ${p.country.code})',
-                decoratorProps: DropDownDecoratorProps(
-                  decoration: InputDecoration(
-                    labelText: 'Puerto de Destino',
-                    hintText: 'Selecciona el puerto de destino',
-                    prefixIcon: Icon(FontAwesomeIcons.locationDot, color: Colors.blueGrey[700]),
-                  ),
-                ),
-                items: (String filter, LoadProps? loadProps) async {
-                  final ports = await portService.getPorts();
-                  return ports.where((port) => 
-                    port.name.toLowerCase().contains(filter.toLowerCase()) ||
-                    port.code.toLowerCase().contains(filter.toLowerCase()) ||
-                    port.country.code.toLowerCase().contains(filter.toLowerCase())
-                  ).toList();
-                },
                 onChanged: (Port? port) {
                   setState(() {
                     _selectedDestinationPort = port;
                   });
                 },
-                selectedItem: _selectedDestinationPort,
                 validator: (value) => value == null ? 'Por favor, selecciona un puerto de destino' : null,
               ),
               const SizedBox(height: 24),
@@ -165,58 +185,34 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
               ),
               const SizedBox(height: 16),
               // Tipo de Contenedor
-              DropdownSearch<ContainerType>(
-                popupProps: const PopupProps.menu(
-                  showSearchBox: true,
-                ),
+              SearchableDropdownField<ContainerType>(
+                labelText: 'Tipo de Contenedor',
+                hintText: 'Selecciona el tipo de contenedor',
+                prefixIcon: Icon(FontAwesomeIcons.boxOpen, color: Colors.blueGrey[700]),
+                items: _availableContainerTypes,
+                selectedItem: _selectedContainerType,
                 itemAsString: (ContainerType ct) => ct.name,
-                decoratorProps: DropDownDecoratorProps(
-                  decoration: InputDecoration(
-                    labelText: 'Tipo de Contenedor',
-                    hintText: 'Selecciona el tipo de contenedor',
-                    prefixIcon: Icon(FontAwesomeIcons.boxOpen, color: Colors.blueGrey[700]),
-                  ),
-                ),
-                items: (String filter, LoadProps? loadProps) async {
-                  final containerTypes = await containerService.getContainerTypes();
-                  return containerTypes.where((ct) => 
-                    ct.name.toLowerCase().contains(filter.toLowerCase())
-                  ).toList();
-                },
                 onChanged: (ContainerType? ct) {
                   setState(() {
                     _selectedContainerType = ct;
                   });
                 },
-                selectedItem: _selectedContainerType,
                 validator: (value) => value == null ? 'Por favor, selecciona un tipo de contenedor' : null,
               ),
               const SizedBox(height: 16),
               // Tipo de Carga
-              DropdownSearch<CargoType>(
-                popupProps: const PopupProps.menu(
-                  showSearchBox: true,
-                ),
+              SearchableDropdownField<CargoType>(
+                labelText: 'Tipo de Carga',
+                hintText: 'Selecciona el tipo de carga',
+                prefixIcon: Icon(FontAwesomeIcons.boxesPacking, color: Colors.blueGrey[700]),
+                items: _availableCargoTypes,
+                selectedItem: _selectedCargoType,
                 itemAsString: (CargoType ct) => ct.name,
-                decoratorProps: DropDownDecoratorProps(
-                  decoration: InputDecoration(
-                    labelText: 'Tipo de Carga',
-                    hintText: 'Selecciona el tipo de carga',
-                    prefixIcon: Icon(FontAwesomeIcons.boxesPacking, color: Colors.blueGrey[700]),
-                  ),
-                ),
-                items: (String filter, LoadProps? loadProps) async {
-                  final cargoTypes = await containerService.getCargoTypes();
-                  return cargoTypes.where((ct) => 
-                    ct.name.toLowerCase().contains(filter.toLowerCase())
-                  ).toList();
-                },
                 onChanged: (CargoType? ct) {
                   setState(() {
                     _selectedCargoType = ct;
                   });
                 },
-                selectedItem: _selectedCargoType,
                 validator: (value) => value == null ? 'Por favor, selecciona un tipo de carga' : null,
               ),
               const SizedBox(height: 16),

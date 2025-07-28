@@ -45,7 +45,8 @@ dependencies:
   intl: ^0.20.2
   
   # Para seleccionar puertos de forma elegante
-  dropdown_search: ^6.0.2
+  #dropdown_search: ^6.0.2
+  #select2dot1: ^2.0.9
   
   # Para iconos
   font_awesome_flutter: ^10.7.0
