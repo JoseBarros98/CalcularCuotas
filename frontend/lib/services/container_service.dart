@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/models/container.dart';
 
 class ContainerService {
-  final String _baseUrl = 'http://localhost:8000'; // Ajusta según tu entorno
+  final String _baseUrl = 'http://localhost:8000';
 
   // --- ContainerType CRUD ---
   Future<List<ContainerType>> getContainerTypes() async {

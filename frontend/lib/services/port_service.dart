@@ -4,7 +4,7 @@ import 'package:frontend/models/port.dart';
 import 'package:frontend/models/quote_calculation.dart';
 
 class PortService {
-  final String _baseUrl = 'http://localhost:8000'; // Ajusta según tu entorno
+  final String _baseUrl = 'http://localhost:8000';
 
   Future<List<Port>> getPorts() async {
     final response = await http.get(Uri.parse('$_baseUrl/api/v1/ports/'));

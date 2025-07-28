@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/models/country.dart';
 
 class CountryService {
-  final String _baseUrl = 'http://localhost:8000'; // Ajusta según tu entorno (emulador/físico/web)
+  final String _baseUrl = 'http://localhost:8000';
 
   Future<List<Country>> getCountries() async {
     final response = await http.get(Uri.parse('$_baseUrl/api/v1/countries/'));
@@ -34,7 +34,7 @@ class CountryService {
       body: json.encode(country.toJson()),
     );
 
-    if (response.statusCode == 201) { // 201 Created
+    if (response.statusCode == 201) {
       return Country.fromJson(json.decode(utf8.decode(response.bodyBytes)));
     } else {
       throw Exception('Failed to create country: ${response.statusCode} ${response.body}');

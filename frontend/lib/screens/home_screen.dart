@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ShipQuote Pro'),
+        title: const Text('Cálculo de Cotizaciones'),
         centerTitle: true,
       ),
       drawer: Drawer(
@@ -119,7 +119,7 @@ class HomeScreen extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Bienvenido a ShipQuote Pro',
+              'Bienvenido, presione el siguiente boton para realizar una cotización',
               style: Theme.of(context).textTheme.headlineMedium,
               textAlign: TextAlign.center,
             ),

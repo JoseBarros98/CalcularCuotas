@@ -15,25 +15,29 @@ class ContainerTypeFormScreen extends StatefulWidget {
 class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _sizeController = TextEditingController();
-  final TextEditingController _typeController = TextEditingController();
   final TextEditingController _maxWeightController = TextEditingController();
   final TextEditingController _internalLengthController = TextEditingController();
   final TextEditingController _internalWidthController = TextEditingController();
   final TextEditingController _internalHeightController = TextEditingController();
   final TextEditingController _volumeController = TextEditingController();
 
+  String? _selectedSize;
+  String? _selectedType;
   bool _isActive = true;
   bool _isLoading = false;
   String? _errorMessage;
+
+  // Opciones para los dropdowns
+  final List<String> _availableSizes = ['20', '40'];
+  final List<String> _availableTypes = ['DRY', 'REEFER'];
 
   @override
   void initState() {
     super.initState();
     if (widget.containerType != null) {
       _nameController.text = widget.containerType!.name;
-      _sizeController.text = widget.containerType!.size;
-      _typeController.text = widget.containerType!.type;
+      _selectedSize = widget.containerType!.size;
+      _selectedType = widget.containerType!.type;
       _maxWeightController.text = widget.containerType!.maxWeight.toString();
       _internalLengthController.text = widget.containerType!.internalLength.toString();
       _internalWidthController.text = widget.containerType!.internalWidth.toString();
@@ -46,8 +50,6 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
   @override
   void dispose() {
     _nameController.dispose();
-    _sizeController.dispose();
-    _typeController.dispose();
     _maxWeightController.dispose();
     _internalLengthController.dispose();
     _internalWidthController.dispose();
@@ -61,6 +63,20 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
       return;
     }
 
+    // Validar que los dropdowns no estén vacíos
+    if (_selectedSize == null || _selectedSize!.isEmpty) {
+      setState(() {
+        _errorMessage = 'Por favor, selecciona un tamaño de contenedor.';
+      });
+      return;
+    }
+    if (_selectedType == null || _selectedType!.isEmpty) {
+      setState(() {
+        _errorMessage = 'Por favor, selecciona un tipo de contenedor.';
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -71,8 +87,8 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
       final newContainerType = ContainerType(
         id: widget.containerType?.id ?? 0,
         name: _nameController.text,
-        size: _sizeController.text,
-        type: _typeController.text,
+        size: _selectedSize!,
+        type: _selectedType!,
         maxWeight: double.parse(_maxWeightController.text),
         internalLength: double.parse(_internalLengthController.text),
         internalWidth: double.parse(_internalWidthController.text),
@@ -129,23 +145,53 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _sizeController,
-                decoration: const InputDecoration(labelText: 'Tamaño (Ej: 20ft, 40ft)'),
+              // Dropdown para Tamaño
+              DropdownButtonFormField<String>(
+                value: _selectedSize,
+                decoration: const InputDecoration(
+                  labelText: 'Tamaño',
+                  hintText: 'Selecciona el tamaño entre 20ft y 40ft)',
+                ),
+                items: _availableSizes.map((String size) {
+                  return DropdownMenuItem<String>(
+                    value: size,
+                    child: Text(size),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedSize = newValue;
+                  });
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa el tamaño';
+                    return 'Por favor, selecciona el tamaño';
                   }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _typeController,
-                decoration: const InputDecoration(labelText: 'Tipo (Ej: Dry, Reefer)'),
+              // Dropdown para Tipo
+              DropdownButtonFormField<String>(
+                value: _selectedType,
+                decoration: const InputDecoration(
+                  labelText: 'Tipo',
+                  hintText: 'Selecciona el tipo entre Seco(DRY) o Refrigerado (REEFER)',
+                ),
+                items: _availableTypes.map((String type) {
+                  return DropdownMenuItem<String>(
+                    value: type,
+                    child: Text(type),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedType = newValue;
+                  });
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor, ingresa el tipo';
+                    return 'Por favor, selecciona el tipo';
                   }
                   return null;
                 },
