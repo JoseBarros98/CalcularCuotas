@@ -14,6 +14,7 @@ Frontend: Flutter/Dart
 
 Estructura del Proyecto
 
+.
 ├── backend/
 │   ├── shipquote_backend/     # Configuración Django
 │   ├── ports/                 # Países y Puertos
