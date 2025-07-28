@@ -18,7 +18,7 @@ class ShippingRouteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShippingRoute
         fields = '__all__'
-        read_only_fields = ('distance_nautical_miles', 'estimated_transit_days')
+        read_only_fields = ('distance_nautical_miles', 'estimated_transit_days') # Estos podrían calcularse o ser solo de lectura
 
 class BaseRateSerializer(serializers.ModelSerializer):
     route = ShippingRouteSerializer(read_only=True)
@@ -52,7 +52,7 @@ class QuoteItemSerializer(serializers.ModelSerializer):
         read_only_fields = ('subtotal',) # Subtotal se calcula automáticamente
 
 class QuoteSerializer(serializers.ModelSerializer):
-    items = QuoteItemSerializer(many=True, read_only=True)
+    items = QuoteItemSerializer(many=True, read_only=True) # Para mostrar los items anidados
     
     origin_port = PortSerializer(read_only=True)
     destination_port = PortSerializer(read_only=True)

@@ -10,7 +10,7 @@ class ApiService {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(utf8.decode(response.bodyBytes));
-      final List<dynamic> results = data['results']; // DRF pagination uses 'results' key
+      final List<dynamic> results = data['results']; 
       return results.map((json) => fromJson(json as Map<String, dynamic>)).toList();
     } else {
       throw Exception('Failed to load $endpoint: ${response.statusCode} ${response.body}');
@@ -41,5 +41,5 @@ class ApiService {
     }
   }
   
-  // Puedes añadir métodos para PUT, DELETE, etc. según sea necesario
+  
 }

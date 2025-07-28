@@ -25,15 +25,15 @@ class ContainerType {
 
   factory ContainerType.fromJson(Map<String, dynamic> json) {
     return ContainerType(
-      id: json['id'] as int, // Asegurar que es int
-      name: json['name'] as String? ?? '', // Manejar null para String
-      size: json['size'] as String? ?? '', // Manejar null para String
-      type: json['type'] as String? ?? '', // Manejar null para String
+      id: json['id'] as int,
+      name: json['name'] as String? ?? '',
+      size: json['size'] as String? ?? '',
+      type: json['type'] as String? ?? '',
       maxWeight: json['max_weight'] == null
-          ? 0.0 // Valor por defecto si es null
+          ? 0.0 
           : (json['max_weight'] is String
-              ? double.tryParse(json['max_weight'] as String) ?? 0.0 // Si es String, parsear
-              : (json['max_weight'] as num).toDouble()), // Si es num, convertir
+              ? double.tryParse(json['max_weight'] as String) ?? 0.0 
+              : (json['max_weight'] as num).toDouble()),
       internalLength: json['internal_length'] == null
           ? 0.0
           : (json['internal_length'] is String
@@ -54,7 +54,7 @@ class ContainerType {
           : (json['volume'] is String
               ? double.tryParse(json['volume'] as String) ?? 0.0
               : (json['volume'] as num).toDouble()),
-      isActive: json['is_active'] as bool? ?? false, // Manejar null para bool
+      isActive: json['is_active'] as bool? ?? false,
     );
   }
 
@@ -98,11 +98,11 @@ class CargoType {
 
   factory CargoType.fromJson(Map<String, dynamic> json) {
     return CargoType(
-      id: json['id'] as int, // Asegurar que es int
-      name: json['name'] as String? ?? '', // Manejar null para String
-      description: json['description'] as String? ?? '', // Manejar null para String
-      hazardous: json['hazardous'] as bool? ?? false, // Manejar null para bool
-      requiresSpecialHandling: json['requires_special_handling'] as bool? ?? false, // Manejar null para bool
+      id: json['id'] as int,
+      name: json['name'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      hazardous: json['hazardous'] as bool? ?? false,
+      requiresSpecialHandling: json['requires_special_handling'] as bool? ?? false,
       densityFactor: json['density_factor'] == null
           ? 0.0
           : (json['density_factor'] is String

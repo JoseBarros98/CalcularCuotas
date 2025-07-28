@@ -9,7 +9,7 @@ import 'package:frontend/models/quote_calculation.dart';
 import 'package:frontend/services/port_service.dart';
 import 'package:frontend/services/container_service.dart';
 import 'package:frontend/services/quote_service.dart';
-import 'package:frontend/widgets/searchable_dropdown_field.dart'; // Importamos nuestro nuevo widget
+import 'package:frontend/widgets/searchable_dropdown_field.dart';
 
 class QuoteFormScreen extends StatefulWidget {
   const QuoteFormScreen({super.key});
@@ -121,7 +121,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
     if (_isDataLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('ShipQuote Pro - Cotización de Embarque'),
+          title: const Text('Cotización de Embarque'),
           centerTitle: true,
         ),
         body: const Center(
@@ -132,7 +132,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ShipQuote Pro - Cotización de Embarque'),
+        title: const Text('Cotización de Embarque'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

@@ -71,7 +71,7 @@ class Quote(models.Model):
     
     def save(self, *args, **kwargs):
         if not self.quote_number:
-            # Generate quote number
+            
             import datetime
             today = datetime.date.today()
             count = Quote.objects.filter(created_at__date=today).count() + 1

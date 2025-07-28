@@ -9,11 +9,10 @@ class QuoteCalculation {
   final int quantity;
   final double weightKg;
   final double volumeCbm;
-  final int estimatedTransitDays;
+  final double estimatedTransitDays;
   final Map<String, dynamic> breakdown;
   final double totalItemCost;
   final double totalQuoteAmount;
-  final String currency;
   final DateTime validUntil;
 
   QuoteCalculation({
@@ -28,7 +27,6 @@ class QuoteCalculation {
     required this.breakdown,
     required this.totalItemCost,
     required this.totalQuoteAmount,
-    required this.currency,
     required this.validUntil,
   });
 
@@ -38,33 +36,14 @@ class QuoteCalculation {
       destinationPort: Port.fromJson(json['destination_port']),
       containerType: ContainerType.fromJson(json['container_type']),
       cargoType: CargoType.fromJson(json['cargo_type']),
-      quantity: json['quantity'],
+      quantity: json['quantity'] as int,
       weightKg: (json['weight_kg'] as num).toDouble(),
       volumeCbm: (json['volume_cbm'] as num).toDouble(),
-      estimatedTransitDays: json['estimated_transit_days'],
-      breakdown: json['breakdown'] as Map<String, dynamic>,
+      estimatedTransitDays: (json['estimated_transit_days'] as num).toDouble(),
+      breakdown: Map<String, dynamic>.from(json['breakdown']),
       totalItemCost: (json['total_item_cost'] as num).toDouble(),
       totalQuoteAmount: (json['total_quote_amount'] as num).toDouble(),
-      currency: json['currency'],
       validUntil: DateTime.parse(json['valid_until']),
     );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'origin_port': originPort.toJson(),
-      'destination_port': destinationPort.toJson(),
-      'container_type': containerType.toJson(),
-      'cargo_type': cargoType.toJson(),
-      'quantity': quantity,
-      'weight_kg': weightKg,
-      'volume_cbm': volumeCbm,
-      'estimated_transit_days': estimatedTransitDays,
-      'breakdown': breakdown,
-      'total_item_cost': totalItemCost,
-      'total_quote_amount': totalQuoteAmount,
-      'currency': currency,
-      'valid_until': validUntil.toIso8601String(),
-    };
   }
 }

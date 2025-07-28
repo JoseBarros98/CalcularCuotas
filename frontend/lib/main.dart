@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/services/port_service.dart';
 import 'package:frontend/services/container_service.dart';
 import 'package:frontend/services/quote_service.dart';
-import 'package:frontend/screens/quote_form_screen.dart';
+import 'package:frontend/services/country_service.dart';
+import 'package:frontend/services/shipping_route_service.dart';
+import 'package:frontend/services/base_rate_service.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<PortService>(create: (_) => PortService()),
+        Provider<ContainerService>(create: (_) => ContainerService()),
+        Provider<QuoteService>(create: (_) => QuoteService()),
+        Provider<CountryService>(create: (_) => CountryService()),
+        Provider<ShippingRouteService>(create: (_) => ShippingRouteService()),
+        Provider<BaseRateService>(create: (_) => BaseRateService()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,44 +29,46 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<PortService>(create: (_) => PortService()),
-        Provider<ContainerService>(create: (_) => ContainerService()),
-        Provider<QuoteService>(create: (_) => QuoteService()),
-      ],
-      child: MaterialApp(
-        title: 'ShipQuote Pro',
-        theme: ThemeData(
-          primarySwatch: Colors.blueGrey,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.blueGrey,
+    return MaterialApp(
+      title: 'ShipQuote Pro',
+      theme: ThemeData(
+        primarySwatch: Colors.blueGrey,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: Colors.blueGrey, width: 2.0),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: BorderSide(color: Colors.blueGrey.shade200, width: 1.0),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: Colors.red, width: 1.0),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(8.0),
+            borderSide: const BorderSide(color: Colors.red, width: 2.0),
+          ),
+          contentPadding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            backgroundColor: Colors.blueGrey[700],
             foregroundColor: Colors.white,
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blueGrey[700],
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Colors.blueGrey.shade700, width: 2),
-            ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
         ),
-        home: const QuoteFormScreen(), // Nuestra pantalla principal
       ),
+      home: const HomeScreen(),
     );
   }
 }

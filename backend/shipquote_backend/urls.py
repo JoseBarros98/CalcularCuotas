@@ -8,7 +8,7 @@ urlpatterns = [
     path('api/v1/', include('containers.urls')),
     path('api/v1/', include('quotes.urls')),
     
-    # DRF Spectacular (API Documentation)
+    
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]

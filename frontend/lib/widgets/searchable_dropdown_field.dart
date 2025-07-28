@@ -67,10 +67,6 @@ class _SearchableDropdownFieldState<T> extends State<SearchableDropdownField<T>>
     if (selected != null && selected != widget.selectedItem) {
       widget.onChanged(selected);
     } else if (selected == null && widget.selectedItem != null) {
-      // Si el usuario cierra el diálogo sin seleccionar nada y ya había algo seleccionado,
-      // podemos decidir si queremos deseleccionar o mantener el valor.
-      // Por ahora, lo mantendremos si no se selecciona nada nuevo.
-      // Si se quisiera deseleccionar al cerrar sin elegir, se podría llamar widget.onChanged(null);
     }
   }
 
@@ -78,7 +74,7 @@ class _SearchableDropdownFieldState<T> extends State<SearchableDropdownField<T>>
   Widget build(BuildContext context) {
     return TextFormField(
       controller: _controller,
-      readOnly: true, // Para que no se pueda escribir directamente
+      readOnly: true,
       onTap: _showSelectionDialog,
       decoration: InputDecoration(
         labelText: widget.labelText,
@@ -88,10 +84,10 @@ class _SearchableDropdownFieldState<T> extends State<SearchableDropdownField<T>>
             ? IconButton(
                 icon: const Icon(Icons.clear),
                 onPressed: () {
-                  widget.onChanged(null); // Permite deseleccionar
+                  widget.onChanged(null);
                 },
               )
-            : const Icon(Icons.arrow_drop_down), // Icono de dropdown
+            : const Icon(Icons.arrow_drop_down),
         border: const OutlineInputBorder(),
       ),
       validator: (value) {
@@ -164,7 +160,7 @@ class _SearchDialogState<T> extends State<_SearchDialog<T>> {
             return ListTile(
               title: Text(widget.itemAsString(item)),
               onTap: () {
-                Navigator.of(context).pop(item); // Devuelve el elemento seleccionado
+                Navigator.of(context).pop(item);
               },
             );
           },
@@ -173,7 +169,7 @@ class _SearchDialogState<T> extends State<_SearchDialog<T>> {
       actions: [
         TextButton(
           onPressed: () {
-            Navigator.of(context).pop(); // Cierra el diálogo sin seleccionar nada
+            Navigator.of(context).pop();
           },
           child: const Text('Cancelar'),
         ),

@@ -1,8 +1,9 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:frontend/models/quote_calculation.dart';
-import 'package:frontend/services/api_service.dart';
 
 class QuoteService {
-  final ApiService _apiService = ApiService();
+  final String _baseUrl = 'http://localhost:8000';
 
   Future<QuoteCalculation> calculateQuote({
     required int originPortId,
@@ -13,16 +14,25 @@ class QuoteService {
     required double weightKg,
     required double volumeCbm,
   }) async {
-    final data = {
-      'origin_port_id': originPortId,
-      'destination_port_id': destinationPortId,
-      'container_type_id': containerTypeId,
-      'cargo_type_id': cargoTypeId,
-      'quantity': quantity,
-      'weight_kg': weightKg,
-      'volume_cbm': volumeCbm,
-    };
-    final response = await _apiService.post('quotes/calculate_quote', data);
-    return QuoteCalculation.fromJson(response);
+    final response = await http.post(
+      Uri.parse('$_baseUrl/api/v1/calculate_quote/'),
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({
+        'origin_port_id': originPortId,
+        'destination_port_id': destinationPortId,
+        'container_type_id': containerTypeId,
+        'cargo_type_id': cargoTypeId,
+        'quantity': quantity,
+        'weight_kg': weightKg,
+        'volume_cbm': volumeCbm,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      return QuoteCalculation.fromJson(json.decode(utf8.decode(response.bodyBytes)));
+    } else {
+      final errorBody = json.decode(utf8.decode(response.bodyBytes));
+      throw Exception('Failed to post to quotes/calculate_cuote: ${response.statusCode} ${errorBody}');
+    }
   }
 }
