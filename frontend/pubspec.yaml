@@ -50,6 +50,9 @@ dependencies:
   
   # Para iconos
   font_awesome_flutter: ^10.7.0
+  pdf: ^3.10.4
+  path_provider: ^2.1.1
+  open_filex: ^4.3.2
 
 dev_dependencies:
   flutter_test:

@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:frontend/config/api_config.dart';
+//import 'package:frontend/config/api_config.dart';
 
 class ApiService {
-  final String baseUrl = ApiConfig.baseUrl;
+  final String _baseUrl = 'http://192.168.1.20:8000';
 
   Future<List<T>> fetchList<T>(String endpoint, T Function(Map<String, dynamic>) fromJson) async {
-    final response = await http.get(Uri.parse('$baseUrl/$endpoint/'));
+    final response = await http.get(Uri.parse('$_baseUrl/$endpoint/'));
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = json.decode(utf8.decode(response.bodyBytes));
@@ -18,7 +18,7 @@ class ApiService {
   }
 
   Future<T> fetchOne<T>(String endpoint, int id, T Function(Map<String, dynamic>) fromJson) async {
-    final response = await http.get(Uri.parse('$baseUrl/$endpoint/$id/'));
+    final response = await http.get(Uri.parse('$_baseUrl/$endpoint/$id/'));
 
     if (response.statusCode == 200) {
       return fromJson(json.decode(utf8.decode(response.bodyBytes)) as Map<String, dynamic>);
@@ -29,7 +29,7 @@ class ApiService {
 
   Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> data) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/$endpoint/'),
+      Uri.parse('$_baseUrl/$endpoint/'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(data),
     );

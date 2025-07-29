@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/models/shipping_route.dart';
 
 class ShippingRouteService {
-  final String _baseUrl = 'http://localhost:8000';
+  final String _baseUrl = 'http://192.168.1.20:8000';
 
   Future<List<ShippingRoute>> getShippingRoutes() async {
     final response = await http.get(Uri.parse('$_baseUrl/api/v1/shipping-routes/'));

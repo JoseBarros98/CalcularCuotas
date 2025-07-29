@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/models/quote_calculation.dart';
 
 class QuoteService {
-  final String _baseUrl = 'http://localhost:8000';
+  final String _baseUrl = 'http://192.168.1.20:8000';
 
   Future<QuoteCalculation> calculateQuote({
     required int originPortId,
@@ -32,7 +32,7 @@ class QuoteService {
       return QuoteCalculation.fromJson(json.decode(utf8.decode(response.bodyBytes)));
     } else {
       final errorBody = json.decode(utf8.decode(response.bodyBytes));
-      throw Exception('Failed to post to quotes/calculate_cuote: ${response.statusCode} ${errorBody}');
+      throw Exception('Failed to post to quotes/calculate_cuote: ${response.statusCode} $errorBody');
     }
   }
 }

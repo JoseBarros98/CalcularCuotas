@@ -4,7 +4,7 @@ import 'package:frontend/models/port.dart';
 import 'package:frontend/models/quote_calculation.dart';
 
 class PortService {
-  final String _baseUrl = 'http://localhost:8000';
+  final String _baseUrl = 'http://192.168.1.20:8000';
 
   Future<List<Port>> getPorts() async {
     final response = await http.get(Uri.parse('$_baseUrl/api/v1/ports/'));
@@ -91,7 +91,7 @@ class PortService {
       return QuoteCalculation.fromJson(json.decode(utf8.decode(response.bodyBytes)));
     } else {
       final errorBody = json.decode(utf8.decode(response.bodyBytes));
-      throw Exception('Failed to post to quotes/calculate_cuote: ${response.statusCode} ${errorBody}');
+      throw Exception('Failed to post to quotes/calculate_cuote: ${response.statusCode} $errorBody');
     }
   }
 }

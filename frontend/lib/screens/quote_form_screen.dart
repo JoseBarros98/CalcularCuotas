@@ -10,6 +10,7 @@ import 'package:frontend/services/port_service.dart';
 import 'package:frontend/services/container_service.dart';
 import 'package:frontend/services/quote_service.dart';
 import 'package:frontend/widgets/searchable_dropdown_field.dart';
+import 'package:frontend/utils/pdf_generator.dart';
 
 class QuoteFormScreen extends StatefulWidget {
   const QuoteFormScreen({super.key});
@@ -32,6 +33,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
   QuoteCalculation? _calculatedQuote;
   bool _isLoading = false;
   String? _errorMessage;
+  bool _isGeneratingPdf = false; // Nuevo estado para la generación de PDF
 
   List<Port> _availablePorts = [];
   List<ContainerType> _availableContainerTypes = [];
@@ -116,12 +118,40 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
     }
   }
 
+  Future<void> _generatePdf() async {
+    if (_calculatedQuote == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Primero calcula una cotización para generar el PDF.')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isGeneratingPdf = true;
+    });
+
+    try {
+      await generateQuotePdf(_calculatedQuote!);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PDF generado y abierto exitosamente.')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al generar o abrir el PDF: $e')),
+      );
+    } finally {
+      setState(() {
+        _isGeneratingPdf = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     if (_isDataLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('Cotización de Embarque'),
+          title: const Text('ShipQuote Pro - Cotización de Embarque'),
           centerTitle: true,
         ),
         body: const Center(
@@ -132,7 +162,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Cotización de Embarque'),
+        title: const Text('ShipQuote Pro - Cotización de Embarque'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -313,9 +343,21 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Resultado de la Cotización',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.blueGrey[800]),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Resultado de la Cotización',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold, color: Colors.blueGrey[800]),
+                ),
+                _isGeneratingPdf
+                    ? const CircularProgressIndicator()
+                    : IconButton(
+                        icon: const Icon(Icons.picture_as_pdf, color: Colors.red),
+                        onPressed: _generatePdf,
+                        tooltip: 'Generar PDF',
+                      ),
+              ],
             ),
             const Divider(height: 20, thickness: 1),
             _buildInfoRow('Ruta:', '${quote.originPort.name} (${quote.originPort.code}) → ${quote.destinationPort.name} (${quote.destinationPort.code})'),
