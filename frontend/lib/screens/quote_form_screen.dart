@@ -33,7 +33,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
   QuoteCalculation? _calculatedQuote;
   bool _isLoading = false;
   String? _errorMessage;
-  bool _isGeneratingPdf = false; // Nuevo estado para la generación de PDF
+  bool _isGeneratingPdf = false;
 
   List<Port> _availablePorts = [];
   List<ContainerType> _availableContainerTypes = [];
@@ -108,8 +108,11 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
         _calculatedQuote = result;
       });
     } catch (e) {
+
+      print('Error técnico al calcular la cotización: $e');
+
       setState(() {
-        _errorMessage = 'Error al calcular la cotización: ${e.toString()}';
+        _errorMessage = 'No se pudo calcular la cotización. Por favor, revisa los datos ingresados o intenta más tarde.';
       });
     } finally {
       setState(() {
@@ -151,7 +154,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
     if (_isDataLoading) {
       return Scaffold(
         appBar: AppBar(
-          title: const Text('ShipQuote Pro - Cotización de Embarque'),
+          title: const Text('Cotización de Embarque'),
           centerTitle: true,
         ),
         body: const Center(
@@ -162,7 +165,7 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('ShipQuote Pro - Cotización de Embarque'),
+        title: const Text('Cotización de Embarque'),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -360,7 +363,8 @@ class _QuoteFormScreenState extends State<QuoteFormScreen> {
               ],
             ),
             const Divider(height: 20, thickness: 1),
-            _buildInfoRow('Ruta:', '${quote.originPort.name} (${quote.originPort.code}) → ${quote.destinationPort.name} (${quote.destinationPort.code})'),
+            _buildInfoRow('Puerto de Origen:', '${quote.originPort.name} (${quote.originPort.code})'),
+            _buildInfoRow('Puerto de Destino:', '${quote.destinationPort.name} (${quote.destinationPort.code})'),
             _buildInfoRow('Tipo de Contenedor:', quote.containerType.name),
             _buildInfoRow('Tipo de Carga:', quote.cargoType.name),
             _buildInfoRow('Cantidad:', '${quote.quantity} contenedor(es)'),

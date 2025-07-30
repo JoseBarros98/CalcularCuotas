@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:frontend/models/container.dart'; // CargoType está en container.dart
-import 'package:frontend/services/container_service.dart'; // CargoTypeService está en container_service.dart
+import 'package:frontend/models/container.dart';
+import 'package:frontend/services/container_service.dart';
 
 class CargoTypeFormScreen extends StatefulWidget {
   final CargoType? cargoType;

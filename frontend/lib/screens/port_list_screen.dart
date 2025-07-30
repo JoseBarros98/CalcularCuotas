@@ -110,8 +110,6 @@ class _PortListScreenState extends State<PortListScreen> {
                       ],
                     ),
                     onTap: () {
-                      // Opcional: Navegar a una pantalla de detalles si la hubiera
-                      // Navigator.push(context, MaterialPageRoute(builder: (context) => PortDetailScreen(port: port)));
                     },
                   ),
                 );

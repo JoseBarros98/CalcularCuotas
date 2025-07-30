@@ -28,8 +28,23 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
   String? _errorMessage;
 
   // Opciones para los dropdowns
-  final List<String> _availableSizes = ['20', '40'];
-  final List<String> _availableTypes = ['DRY', 'REEFER'];
+  //Tamaño del contenedor
+  final Map<String, String> _sizesLabels = {
+    '20': '20ft',
+    '40': '40ft',
+    '45': '45ft',
+    '40HC': '40ft HC',
+  };
+  List<String> get _availableSizes => _sizesLabels.keys.toList();
+  //Tipo de contenedor
+  final Map<String, String> _typeLabels = {
+    'DRY': 'Seco',
+    'REEFER': 'Refrigerado',
+    'OPEN_TOP': 'Abierto',
+    'FLAT_RACK': 'Plataforma',
+    'TANK': 'Tanque',
+  };
+  List<String> get _availableTypes => _typeLabels.keys.toList();
 
   @override
   void initState() {
@@ -145,17 +160,17 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Dropdown para Tamaño
+              // Dropdown para Tamaño (con nombres amigables)
               DropdownButtonFormField<String>(
                 value: _selectedSize,
                 decoration: const InputDecoration(
                   labelText: 'Tamaño',
-                  hintText: 'Selecciona el tamaño entre 20ft y 40ft)',
+                  hintText: 'Selecciona el tamaño del contenedor',
                 ),
                 items: _availableSizes.map((String size) {
                   return DropdownMenuItem<String>(
                     value: size,
-                    child: Text(size),
+                    child: Text(_sizesLabels[size] ?? size),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {
@@ -171,17 +186,17 @@ class _ContainerTypeFormScreenState extends State<ContainerTypeFormScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              // Dropdown para Tipo
+              
               DropdownButtonFormField<String>(
                 value: _selectedType,
                 decoration: const InputDecoration(
                   labelText: 'Tipo',
-                  hintText: 'Selecciona el tipo entre Seco(DRY) o Refrigerado (REEFER)',
+                  hintText: 'Selecciona el tipo de contenedor',
                 ),
                 items: _availableTypes.map((String type) {
                   return DropdownMenuItem<String>(
                     value: type,
-                    child: Text(type),
+                    child: Text(_typeLabels[type] ?? type),
                   );
                 }).toList(),
                 onChanged: (String? newValue) {

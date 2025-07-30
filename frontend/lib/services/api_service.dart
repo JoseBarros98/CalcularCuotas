@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 //import 'package:frontend/config/api_config.dart';
 
 class ApiService {
-  final String _baseUrl = 'http://192.168.1.20:8000';
+  final String _baseUrl = 'http://localhost:8000';
 
   Future<List<T>> fetchList<T>(String endpoint, T Function(Map<String, dynamic>) fromJson) async {
     final response = await http.get(Uri.parse('$_baseUrl/$endpoint/'));
